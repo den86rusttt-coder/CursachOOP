@@ -1,0 +1,120 @@
+create table person
+(
+  id           serial primary key,
+  name         varchar(255) not null,
+  sex          varchar(15)  not null,
+  birthday     date         not null,
+  phone_number integer
+);
+
+create table sportsman
+(
+  id          serial primary key,
+  id_person   integer not null references person (id),
+  rang        varchar(15),
+  party       integer not null references party (id),
+  abonement   integer not null references abonement (id),
+  value_since date    not null,
+  value_until date
+);
+
+create table trainer
+(
+  id          serial primary key,
+  id_person   integer not null references person (id),
+  rang        varchar(15),
+  pay         integer not null,
+  value_since date    not null,
+  value_until date
+);
+
+create table party
+(
+  id   serial primary key,
+  name varchar(255) not null
+);
+
+create table gym
+(
+  id           serial primary key,
+  name         varchar(255) not null,
+  adress       varchar(255) not null,
+  phone_number integer
+);
+
+create table abonement
+(
+  id          serial primary key,
+  name        varchar(255) not null,
+  price       integer      not null,
+  actually    boolean      not null,
+  start_date  date         not null,
+  finish_date date         not null
+);
+
+create table timetable
+(
+  id          serial primary key,
+  day_of_week varchar(20) not null,
+  start_time  time        not null,
+  finish_time time        not null,
+  trainer     integer     not null references trainer (id),
+  gym         integer     not null references gym (id),
+  party       integer     not null references party (id)
+);
+
+create table fighter
+(
+  id             serial primary key,
+  id_sportsman   integer      not null references sportsman (id),
+  id_competition integer      not null references competition (id),
+  category       varchar(255) not null,
+  result         integer
+);
+
+create table competition
+(
+  id         serial primary key,
+  name       varchar(255) not null,
+  place      varchar(255) not null,
+  date       date         not null,
+  time_start time         not null
+);
+
+
+create table fighter_category(
+  id          serial primary key,
+  age         varchar(15) not null,
+  sex         varchar(15) not null,
+  weight      varchar(15) not null
+);
+
+alter table fighter drop column category;
+alter table fighter add column id_fighter_category integer;
+alter table fighter alter column id_fighter_category set not null;
+alter table fighter add constraint fighter_id_category_fk
+   foreign key (id_fighter_category)
+   references fighter_category (id)
+   on delete cascade on update cascade;
+
+create table rang
+(
+  id      serial primary key,
+  value   integer     not null,
+  title   varchar(5) not null
+);
+
+alter table sportsman drop column rang;
+alter table sportsman add column rang integer;
+alter table sportsman add constraint sportsman_rang_fk
+    foreign key (rang)
+      references rang (id)
+      on delete cascade on update cascade;
+
+alter table trainer drop column rang;
+alter table trainer add column rang integer;
+alter table trainer add constraint trainer_rang_fk
+    foreign key (rang)
+      references rang (id)
+      on delete cascade on update cascade;
+
